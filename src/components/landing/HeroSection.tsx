@@ -16,16 +16,7 @@ export const HeroSection = () => {
 
 
 
-      {/* Floating Elements */}
-      <div className="absolute top-20 left-10 animate-float opacity-20">
-        <TrendingUp className="w-16 h-16 text-primary" />
-      </div>
-      <div className="absolute top-40 right-20 animate-float opacity-20" style={{ animationDelay: "2s" }}>
-        <Target className="w-12 h-12 text-primary" />
-      </div>
-      <div className="absolute bottom-40 left-20 animate-float opacity-20" style={{ animationDelay: "4s" }}>
-        <Zap className="w-10 h-10 text-primary" />
-      </div>
+
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
