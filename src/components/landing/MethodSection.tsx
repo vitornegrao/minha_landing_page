@@ -29,10 +29,10 @@ const steps = [
 
 export const MethodSection = () => {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section id="method" className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-dark" />
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-      
+
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <span className="text-primary font-semibold text-sm uppercase tracking-wider mb-4 block">
@@ -58,7 +58,7 @@ export const MethodSection = () => {
               <span className="absolute top-4 right-4 text-6xl font-display font-black text-border/50 group-hover:text-primary/20 transition-colors duration-500">
                 {step.number}
               </span>
-              
+
               {/* Icon */}
               <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors duration-300">
                 <step.icon className="w-7 h-7 text-primary" />

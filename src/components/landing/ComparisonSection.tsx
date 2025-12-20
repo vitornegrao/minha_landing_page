@@ -20,7 +20,7 @@ const agencyProblems = [
 
 export const ComparisonSection = () => {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section id="comparison" className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 bg-card" />
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
