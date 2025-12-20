@@ -33,8 +33,7 @@ export const HeroSection = () => {
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 mb-8 animate-slide-up" style={{ animationDelay: "0.2s" }}>
               Chega de métricas vazias. Meu foco é gerar{" "}
-              <span className="text-foreground font-semibold">leads qualificados</span> no Instagram e Facebook
-              que se transformam em <span className="text-primary font-semibold">vendas e lucro</span> para o seu negócio.
+              <span className="text-foreground font-semibold">leads qualificados</span> que se transformam em <span className="text-primary font-semibold">vendas e lucro</span> para o seu negócio.
             </p>
 
             {/* CTA */}
