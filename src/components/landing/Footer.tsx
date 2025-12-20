@@ -17,7 +17,7 @@ export const Footer = () => {
           </p>
 
           <p className="text-muted-foreground text-sm">
-            Especialista em Meta Ads
+            Especialista em Meta Ads e Google Ads
           </p>
         </div>
       </div>
