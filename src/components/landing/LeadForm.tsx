@@ -85,56 +85,90 @@ export const LeadForm = () => {
     setIsSubmitting(true);
 
     try {
+      console.log("Starting lead submission (Robust Mode)...");
       const finalUtmSource = utmParams.utm_source || formData.channel;
       const finalUtmMedium = utmParams.utm_medium || (utmParams.utm_source ? "manual_selection" : "website_form");
 
-      const { error } = await supabase.from("leads").insert({
+      const insertData = {
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         phone: formData.phone.trim(),
-        // age: Number(formData.age), // Commented out to avoid schema error if column missing
-        // profession: formData.profession.trim(),
-        // area_of_activity: formData.area_of_activity.trim(),
         utm_source: finalUtmSource,
         utm_campaign: utmParams.utm_campaign || null,
         utm_medium: finalUtmMedium,
         utm_term: utmParams.utm_term || null,
-        utm_content: `Idade: ${formData.age} | Prof: ${formData.profession} | Área: ${formData.area_of_activity} | Canal: ${formData.channel} ${utmParams.utm_content ? `| ${utmParams.utm_content}` : ""}`,
-      });
+        utm_content: `Idade: ${formData.age} | Prof: ${formData.profession} | Área: ${formData.area_of_activity} | Canal: ${formData.channel}${utmParams.utm_content ? ` | ${utmParams.utm_content}` : ""}`,
+      };
 
-      if (error) throw error;
+      let supabaseSuccess = false;
+      let supabaseErrorMsg = "";
 
-      setIsSuccess(true);
-      setFormData({ name: "", email: "", phone: "", age: "", profession: "", area_of_activity: "", channel: "" });
+      console.log("Attempting Supabase insert...");
+      try {
+        const { error } = await supabase.from("leads").insert(insertData);
+        if (error) throw error;
+        supabaseSuccess = true;
+        console.log("Supabase insert success!");
+      } catch (err: any) {
+        console.error("Supabase insert failed:", err);
+        supabaseErrorMsg = err.message || JSON.stringify(err);
+      }
+
+      const emailData = {
+        "Nome": formData.name.trim(),
+        "E-mail": formData.email.trim().toLowerCase(),
+        "Telefone": formData.phone.trim(),
+        "Idade": formData.age,
+        "Profissão": formData.profession,
+        "Área de Atuação": formData.area_of_activity,
+        "Como conheceu": formData.channel,
+        "Origem (UTM Source)": utmParams.utm_source || "Direto",
+        "Campanha (UTM Campaign)": utmParams.utm_campaign || "Nenhuma",
+        "_subject": supabaseSuccess
+          ? "Novo Lead Capturado - Dados Completos!"
+          : "NOVO LEAD (ALERTA: Falha no Supabase!)",
+        "_template": "basic"
+      };
+
+      if (!supabaseSuccess) {
+        // @ts-ignore - Adding dynamic fields for failure context
+        emailData["AVISO"] = `Este lead NÃO foi salvo no banco de dados devido ao erro: ${supabaseErrorMsg}.`;
+      }
 
       // Send email via Formsubmit.co
+      console.log("Sending email notification...");
+      let emailSuccess = false;
       try {
-        await fetch("https://formsubmit.co/ajax/vitornegraorocha@gmail.com", {
+        const response = await fetch("https://formsubmit.co/ajax/vitornegraorocha@gmail.com", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json"
           },
-          body: JSON.stringify({
-            name: formData.name.trim(),
-            email: formData.email.trim().toLowerCase(),
-            phone: formData.phone.trim(),
-            age: formData.age,
-            profession: formData.profession,
-            area_of_activity: formData.area_of_activity,
-            channel: formData.channel,
-            ...utmParams,
-            _subject: "Novo Lead Capturado - Dados Completos!"
-          })
+          body: JSON.stringify(emailData)
         });
+        if (response.ok) {
+          emailSuccess = true;
+          console.log("Email notification sent successfully!");
+        } else {
+          console.error("Email notification failed with status:", response.status);
+        }
       } catch (emailError) {
         console.error("Error sending email notification:", emailError);
       }
+
+      if (supabaseSuccess || emailSuccess) {
+        setIsSuccess(true);
+        setFormData({ name: "", email: "", phone: "", age: "", profession: "", area_of_activity: "", channel: "" });
+      } else {
+        throw new Error("Both Supabase and Email notification failed.");
+      }
+
     } catch (error) {
-      console.error("Error submitting lead:", error);
+      console.error("Total submission failure:", error);
       toast({
         title: "Erro ao enviar",
-        description: "Tente novamente em alguns instantes. Verifique se preencheu todos os campos.",
+        description: "Pedimos desculpas, mas não conseguimos processar seus dados no momento. Por favor, tente falar diretamente pelo WhatsApp ou Instagram.",
         variant: "destructive",
       });
     } finally {
