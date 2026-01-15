@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Define o diretório base do projeto
+project_dir=$(git rev-parse --show-toplevel)
+cd "$project_dir" || exit
+
+echo "🔄 Alterações detectadas. Iniciando automação pós-merge..."
+
+# --- 1. Instalação de Dependências ---
+# Verifica se houve alteração no package-lock.json para decidir se roda npm install
+# Usamos 'npm ci' (Clean Install) que é mais rápido e seguro para produção
+if git diff-tree -r --name-only --no-commit-id HEAD@{1} HEAD | grep --quiet 'package-lock.json'; then
+    echo "📦 Mudanças nas dependências detectadas. Executando npm ci..."
+    npm ci
+fi
+
+# --- 2. Build da Aplicação ---
+echo "🚀 Executando npm run build..."
+npm run build
+
+# --- 3. Correção de Permissões (Crítico para seu ambiente) ---
+# Como você pode estar rodando git pull como root, o build será criado como root.
+# Isso devolve a propriedade para o usuário do servidor web (www-data).
+echo "🔒 Ajustando permissões da pasta dist para www-data..."
+chown -R www-data:www-data "$project_dir/dist"
+
+echo "✅ Build finalizado e permissões ajustadas!"
